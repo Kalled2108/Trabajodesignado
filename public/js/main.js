@@ -1,35 +1,38 @@
 // Variables globales
 let albumActual = null;
 let fotoActualId = null;
-let favoritosActuales = [];
 
 // Cargar fotos de un álbum
 function cargarFotosAlbum(albumId) {
     albumActual = albumId;
-    const nombresAlbumes = {
-        1: 'Viajes',
-        2: 'Naturaleza',
-        3: 'Familia'
+    const albumesNombres = {
+        1: 'Exploración Global',
+        2: 'Esencia Natural',
+        3: 'Legado Familiar'
     };
 
     fetch(`/api/album/${albumId}`)
         .then(response => response.json())
         .then(fotos => {
+            document.getElementById('albumesContainer').style.display = 'none';
             document.getElementById('galeriaAlbum').style.display = 'block';
-            document.getElementById('tituloAlbum').textContent = nombresAlbumes[albumId];
+            document.getElementById('tituloAlbum').textContent = albumesNombres[albumId];
             
             let fotosHTML = '';
             fotos.forEach(foto => {
+                const liked = isPhotoLiked(foto.id);
                 fotosHTML += `
-                    <div class="col-md-4 mb-4">
-                        <div class="card foto-card">
-                            <img src="${foto.src}" class="card-img-top cursor-pointer" 
-                                 onclick="verFoto('${foto.src}', '${foto.titulo}', ${foto.id}, ${foto.likes})">
-                            <div class="card-body">
-                                <h5 class="card-title">${foto.titulo}</h5>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-muted">👍 ${foto.likes}</span>
-                                    <button class="btn btn-sm btn-warning" onclick="agregarAFavoritosRapido(${foto.id})">⭐</button>
+                    <div class="card" onclick="verFoto('${foto.src}', '${foto.titulo}', ${foto.id}, ${foto.likes})">
+                        <img src="${foto.src}" class="card-img" alt="${foto.titulo}">
+                        <div class="card-body">
+                            <h3 class="card-title">${foto.titulo}</h3>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span class="card-meta">${liked ? '❤️' : '🤍'} ${foto.likes}</span>
+                                <div style="display: flex; gap: 0.5rem;">
+                                    <button class="btn-action" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" 
+                                            onclick="event.stopPropagation(); agregarAFavoritosRapido(${foto.id})">⭐</button>
+                                    <button class="btn-action" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.2);" 
+                                            onclick="event.stopPropagation(); confirmarEliminarFoto(${albumId}, ${foto.id})">🗑️</button>
                                 </div>
                             </div>
                         </div>
@@ -38,7 +41,7 @@ function cargarFotosAlbum(albumId) {
             });
 
             document.getElementById('fotosContainer').innerHTML = fotosHTML;
-            window.scrollTo({ top: document.getElementById('galeriaAlbum').offsetTop, behavior: 'smooth' });
+            window.scrollTo({ top: document.getElementById('galeriaAlbum').offsetTop - 100, behavior: 'smooth' });
         })
         .catch(error => console.error('Error:', error));
 }
@@ -46,159 +49,306 @@ function cargarFotosAlbum(albumId) {
 // Cerrar galería
 function cerrarGaleria() {
     document.getElementById('galeriaAlbum').style.display = 'none';
+    document.getElementById('albumesContainer').style.display = 'grid';
     albumActual = null;
+    window.scrollTo({ top: document.getElementById('albumes').offsetTop - 100, behavior: 'smooth' });
 }
 
-// Ver foto en modal
+// Modal Logic
 function verFoto(src, titulo, fotoId, likes) {
     fotoActualId = fotoId;
     document.getElementById('modalTitulo').textContent = titulo;
     document.getElementById('modalImagen').src = src;
     document.getElementById('likeCount').textContent = likes;
     
-    // Verificar si está en favoritos
     verificarFavorito(fotoId);
     
-    const modal = new bootstrap.Modal(document.getElementById('modalFoto'));
-    modal.show();
+    // Verificar si ya le dio like
+    const btnLike = document.getElementById('btnLike');
+    if (isPhotoLiked(fotoId)) {
+        btnLike.classList.add('active');
+        btnLike.style.opacity = '0.7';
+        btnLike.disabled = true;
+    } else {
+        btnLike.classList.remove('active');
+        btnLike.style.opacity = '1';
+        btnLike.disabled = false;
+    }
+    
+    document.getElementById('modalFoto').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarModal() {
+    document.getElementById('modalFoto').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Lógica para añadir fotos
+function abrirModalAñadirFoto() {
+    document.getElementById('modalAñadirFoto').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarModalAñadir() {
+    document.getElementById('modalAñadirFoto').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('formAñadirFoto').reset();
+}
+
+function subirFoto(event) {
+    event.preventDefault();
+    if (!albumActual) return;
+
+    const formData = new FormData();
+    formData.append('titulo', document.getElementById('inputTitulo').value);
+    formData.append('foto', document.getElementById('inputFoto').files[0]);
+
+    fetch(`/api/album/${albumActual}/foto`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            cerrarModalAñadir();
+            cargarFotosAlbum(albumActual);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Lógica para editar perfil
+function abrirModalEditarPerfil() {
+    document.getElementById('editNombre').value = document.getElementById('perfilNombre').textContent;
+    document.getElementById('editDescripcion').value = document.getElementById('perfilDescripcion').textContent;
+    // El input file no se puede poblar por seguridad
+    
+    document.getElementById('modalEditarPerfil').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarModalEditar() {
+    document.getElementById('modalEditarPerfil').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function actualizarPerfil(event) {
+    event.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('nombre', document.getElementById('editNombre').value);
+    formData.append('descripcion', document.getElementById('editDescripcion').value);
+    const fotoFile = document.getElementById('editFoto').files[0];
+    if (fotoFile) {
+        formData.append('foto', fotoFile);
+    }
+
+    fetch('/api/perfil', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('perfilNombre').textContent = data.perfil.nombre;
+            document.getElementById('perfilDescripcion').textContent = data.perfil.descripcion;
+            document.querySelector('.profile-image').src = data.perfil.foto;
+            cerrarModalEditar();
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Cerrar modales al hacer click fuera
+window.onclick = function(event) {
+    if (event.target.id === 'modalFoto') cerrarModal();
+    if (event.target.id === 'modalAñadirFoto') cerrarModalAñadir();
+    if (event.target.id === 'modalEditarPerfil') cerrarModalEditar();
+    if (event.target.id === 'modalAñadirContacto') cerrarModalAñadirContacto();
 }
 
 // Dar like a una foto
 function darLike() {
+    if (isPhotoLiked(fotoActualId)) return;
+
     fetch(`/api/like/${fotoActualId}`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        }
+        headers: { 'Content-Type': 'application/json' }
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             document.getElementById('likeCount').textContent = data.likes;
-            // Actualizar el contador en la galería también
+            markPhotoAsLiked(fotoActualId);
+            
+            const btnLike = document.getElementById('btnLike');
+            btnLike.classList.add('active');
+            btnLike.disabled = true;
+
             if (albumActual) {
-                cargarFotosAlbum(albumActual);
+                cargarFotosAlbum(albumActual); // Recargar para ver el corazón lleno
             }
         }
     })
     .catch(error => console.error('Error:', error));
 }
 
-// Cargar contactos con AJAX
+// Helpers para Likes (Simulando una cuenta con localStorage)
+function isPhotoLiked(id) {
+    const likes = JSON.parse(localStorage.getItem('user_likes') || '[]');
+    return likes.includes(id);
+}
+
+function markPhotoAsLiked(id) {
+    const likes = JSON.parse(localStorage.getItem('user_likes') || '[]');
+    if (!likes.includes(id)) {
+        likes.push(id);
+        localStorage.setItem('user_likes', JSON.stringify(likes));
+    }
+}
+
+function actualizarLikesEnGaleria(id, likes) {
+    // Buscar el elemento en la galería y actualizar
+    // Esto es más profesional que recargar todo el álbum
+}
+
+// Contactos AJAX
 function cargarContactos() {
-    const btnCargarContactos = document.getElementById('btnCargarContactos');
-    const contactosContainer = document.getElementById('contactosContainer');
+    const btn = document.getElementById('btnCargarContactos');
+    const container = document.getElementById('contactosContainer');
     
-    // Si ya están cargados, solo mostrar/ocultar
-    if (contactosContainer.innerHTML && contactosContainer.innerHTML.trim() !== '') {
-        contactosContainer.innerHTML = '';
-        btnCargarContactos.textContent = 'Cargar Contactos';
+    if (container.innerHTML !== '' && btn.textContent === 'Ocultar Contactos') {
+        container.innerHTML = '';
+        btn.textContent = 'Cargar Red de Contactos';
         return;
     }
 
-    btnCargarContactos.textContent = 'Cargando...';
-    btnCargarContactos.disabled = true;
+    btn.textContent = 'Sincronizando...';
+    btn.disabled = true;
 
     fetch('/api/contactos')
         .then(response => response.json())
         .then(contactos => {
-            let contactosHTML = '';
-            contactos.forEach(contacto => {
-                contactosHTML += `
-                    <div class="col-md-6 mb-3">
-                        <div class="card contacto-card">
-                            <div class="card-body">
-                                <h5 class="card-title">${contacto.nombre}</h5>
-                                <p class="card-text">
-                                    📧 <a href="mailto:${contacto.email}">${contacto.email}</a><br>
-                                    📱 ${contacto.telefono}
-                                </p>
+            let html = '';
+            contactos.forEach(c => {
+                html += `
+                    <div class="contact-card">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <h3>${c.nombre}</h3>
+                                <p class="contact-info">📧 ${c.email}</p>
+                                <p class="contact-info">📱 ${c.telefono}</p>
                             </div>
+                            <button class="btn-action" style="padding: 0.5rem; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.2);" 
+                                    onclick="confirmarEliminarContacto(${c.id})">🗑️</button>
                         </div>
                     </div>
                 `;
             });
-
-            contactosContainer.innerHTML = contactosHTML;
-            btnCargarContactos.textContent = 'Ocultar Contactos';
-            btnCargarContactos.disabled = false;
+            container.innerHTML = html;
+            btn.textContent = 'Ocultar Contactos';
+            btn.disabled = false;
         })
         .catch(error => {
             console.error('Error:', error);
-            btnCargarContactos.textContent = 'Cargar Contactos';
-            btnCargarContactos.disabled = false;
+            btn.textContent = 'Reintentar Carga';
+            btn.disabled = false;
         });
 }
 
-// Agregar a favoritos
+// Lógica para añadir contactos
+function abrirModalAñadirContacto() {
+    document.getElementById('modalAñadirContacto').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function cerrarModalAñadirContacto() {
+    document.getElementById('modalAñadirContacto').style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.getElementById('formAñadirContacto').reset();
+}
+
+function subirContacto(event) {
+    event.preventDefault();
+    
+    const nombre = document.getElementById('contactoNombre').value;
+    const email = document.getElementById('contactoEmail').value;
+    const telefono = document.getElementById('contactoTelefono').value;
+
+    fetch('/api/contactos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, email, telefono })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            cerrarModalAñadirContacto();
+            cargarContactos(); // Recargar la lista
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+// Favoritos
 function agregarFavorito() {
     if (!fotoActualId) return;
 
     fetch('/api/favoritos', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fotoId: fotoActualId })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            const btn = document.getElementById('btnFavorito');
             if (data.favorito) {
-                alert('✅ Agregado a favoritos');
-                document.getElementById('btnFavorito').textContent = '⭐ Agregado a Favoritos';
-                document.getElementById('btnFavorito').disabled = true;
-            } else {
-                alert(data.message);
+                btn.classList.add('active');
+                btn.textContent = '⭐ En Favoritos';
             }
         }
     })
     .catch(error => console.error('Error:', error));
 }
 
-// Agregar a favoritos desde la galería rápidamente
 function agregarAFavoritosRapido(fotoId) {
-    fotoActualId = fotoId;
     fetch('/api/favoritos', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fotoId: fotoId })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success && data.favorito) {
-            alert('✅ Agregado a favoritos');
+            // Animación visual o feedback sutil
+            console.log('Agregado a favoritos');
         }
     })
     .catch(error => console.error('Error:', error));
 }
 
-// Verificar si una foto está en favoritos
 function verificarFavorito(fotoId) {
     fetch('/api/favoritos')
         .then(response => response.json())
         .then(favoritos => {
-            const btnFavorito = document.getElementById('btnFavorito');
+            const btn = document.getElementById('btnFavorito');
             if (favoritos.includes(fotoId)) {
-                btnFavorito.textContent = '⭐ Agregado a Favoritos';
-                btnFavorito.disabled = true;
+                btn.classList.add('active');
+                btn.textContent = '⭐ En Favoritos';
             } else {
-                btnFavorito.textContent = '⭐ Agregar a Favoritos';
-                btnFavorito.disabled = false;
+                btn.classList.remove('active');
+                btn.textContent = '⭐ Favorito';
             }
-        })
-        .catch(error => console.error('Error:', error));
+        });
 }
 
-// Cargar y mostrar favoritos
 function cargarFavoritos() {
-    const favoritosContainer = document.getElementById('favoritosContainer');
+    const container = document.getElementById('favoritosContainer');
     
-    // Si ya están cargados, limpiar
-    if (favoritosContainer.innerHTML && favoritosContainer.innerHTML.trim() !== '') {
-        favoritosContainer.innerHTML = '';
+    if (container.innerHTML !== '') {
+        container.innerHTML = '';
         return;
     }
 
@@ -206,60 +356,79 @@ function cargarFavoritos() {
         .then(response => response.json())
         .then(favoritos => {
             if (favoritos.length === 0) {
-                favoritosContainer.innerHTML = '<div class="col-12"><p class="text-muted">No hay fotos en favoritos</p></div>';
+                container.innerHTML = '<p class="card-meta">No has seleccionado favoritos todavía.</p>';
                 return;
             }
 
-            // Obtener todas las fotos y filtrar por ID
+            // Obtener todas las fotos de los 3 álbumes
             Promise.all([
                 fetch('/api/album/1').then(r => r.json()),
                 fetch('/api/album/2').then(r => r.json()),
                 fetch('/api/album/3').then(r => r.json())
             ])
-            .then(([fotos1, fotos2, fotos3]) => {
-                const todasLasFotos = [...fotos1, ...fotos2, ...fotos3];
-                const fotosFavoritas = todasLasFotos.filter(foto => favoritos.includes(foto.id));
+            .then(resultados => {
+                const todas = resultados.flat();
+                const filtradas = todas.filter(f => favoritos.includes(f.id));
 
-                let favoritosHTML = '';
-                fotosFavoritas.forEach(foto => {
-                    favoritosHTML += `
-                        <div class="col-md-4 mb-4">
-                            <div class="card foto-card">
-                                <img src="${foto.src}" class="card-img-top cursor-pointer" 
-                                     onclick="verFoto('${foto.src}', '${foto.titulo}', ${foto.id}, ${foto.likes})">
-                                <div class="card-body">
-                                    <h5 class="card-title">${foto.titulo}</h5>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="text-muted">👍 ${foto.likes}</span>
-                                        <button class="btn btn-sm btn-danger" onclick="eliminarFavorito(${foto.id})">🗑️</button>
-                                    </div>
-                                </div>
+                let html = '';
+                filtradas.forEach(foto => {
+                    html += `
+                        <div class="card" onclick="verFoto('${foto.src}', '${foto.titulo}', ${foto.id}, ${foto.likes})">
+                            <img src="${foto.src}" class="card-img" alt="${foto.titulo}">
+                            <div class="card-body">
+                                <h3 class="card-title">${foto.titulo}</h3>
+                                <button class="btn-action" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.2);" 
+                                        onclick="event.stopPropagation(); eliminarFavorito(${foto.id})">🗑️ Eliminar</button>
                             </div>
                         </div>
                     `;
                 });
-
-                favoritosContainer.innerHTML = favoritosHTML;
-            })
-            .catch(error => console.error('Error:', error));
-        })
-        .catch(error => console.error('Error:', error));
+                container.innerHTML = html;
+            });
+        });
 }
 
-// Eliminar de favoritos
 function eliminarFavorito(fotoId) {
-    fetch(`/api/favoritos/${fotoId}`, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    })
+    fetch(`/api/favoritos/${fotoId}`, { method: 'DELETE' })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert('❌ Eliminado de favoritos');
-            cargarFavoritos(); // Recargar la lista
+            document.getElementById('favoritosContainer').innerHTML = '';
+            cargarFavoritos();
         }
-    })
-    .catch(error => console.error('Error:', error));
+    });
+}
+
+// Lógica de Eliminación (Albums, Fotos, Contactos)
+function confirmarEliminarAlbum(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar este álbum y todas sus fotos?')) {
+        fetch(`/api/album/${id}`, { method: 'DELETE' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) location.reload(); // Recargar para actualizar la lista de álbumes
+        });
+    }
+}
+
+function confirmarEliminarFoto(albumId, fotoId) {
+    if (confirm('¿Estás seguro de que deseas eliminar esta fotografía?')) {
+        fetch(`/api/album/${albumId}/foto/${fotoId}`, { method: 'DELETE' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) cargarFotosAlbum(albumId);
+        });
+    }
+}
+
+function confirmarEliminarContacto(id) {
+    if (confirm('¿Estás seguro de que deseas eliminar este contacto?')) {
+        fetch(`/api/contactos/${id}`, { method: 'DELETE' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('contactosContainer').innerHTML = '';
+                cargarContactos();
+            }
+        });
+    }
 }

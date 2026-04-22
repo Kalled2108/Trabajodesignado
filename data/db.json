@@ -1,0 +1,115 @@
+{
+  "perfil": {
+    "nombre": "Kalled21",
+    "descripcion": "Programador Junior apasionado por el desarrollo web, la arquitectura de software y la creación de experiencias digitales excepcionales.",
+    "foto": "/uploads/1776883806472-374297734.jpeg"
+  },
+  "albumes": [
+    {
+      "id": 1,
+      "nombre": "Exploración Global",
+      "foto": "/images/viaje_1.png",
+      "fotos": [
+        {
+          "id": 1,
+          "src": "/images/viaje_1.png",
+          "titulo": "Atardecer en París",
+          "likes": 124
+        },
+        {
+          "id": 2,
+          "src": "/images/viaje_2.png",
+          "titulo": "Luces de Tokyo",
+          "likes": 89
+        },
+        {
+          "id": 3,
+          "src": "/images/viaje_3.png",
+          "titulo": "Paraíso en Bali",
+          "likes": 210
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "nombre": "Esencia Natural",
+      "foto": "/images/naturaleza_1.png",
+      "fotos": [
+        {
+          "id": 4,
+          "src": "/images/naturaleza_1.png",
+          "titulo": "Bosque Místico",
+          "likes": 156
+        },
+        {
+          "id": 5,
+          "src": "/images/naturaleza_2.png",
+          "titulo": "Cumbres Nevadas",
+          "likes": 98
+        },
+        {
+          "id": 6,
+          "src": "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&q=80&w=1000",
+          "titulo": "Valle de Flores",
+          "likes": 142
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "nombre": "Legado Familiar",
+      "foto": "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=1000",
+      "fotos": [
+        {
+          "id": 7,
+          "src": "https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=1000",
+          "titulo": "Tarde de Picnic",
+          "likes": 345
+        },
+        {
+          "id": 8,
+          "src": "https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?auto=format&fit=crop&q=80&w=1000",
+          "titulo": "Atardecer en Familia",
+          "likes": 278
+        },
+        {
+          "id": 9,
+          "src": "https://images.unsplash.com/photo-1484981138541-3d074aa97716?auto=format&fit=crop&q=80&w=1000",
+          "titulo": "Hogar Cálido",
+          "likes": 195
+        }
+      ]
+    }
+  ],
+  "contactos": [
+    {
+      "id": 1,
+      "nombre": "Valentina Martínez",
+      "email": "valentina@studio.com",
+      "telefono": "+34 612 345 678"
+    },
+    {
+      "id": 2,
+      "nombre": "Julián Castro",
+      "email": "julian@media.com",
+      "telefono": "+34 698 765 432"
+    },
+    {
+      "id": 3,
+      "nombre": "Sofía Herrera",
+      "email": "sofia@design.com",
+      "telefono": "+34 645 123 789"
+    },
+    {
+      "id": 4,
+      "nombre": "Mateo Ruiz",
+      "email": "mateo@photo.com",
+      "telefono": "+34 677 888 999"
+    }
+  ],
+  "favoritos": [
+    2,
+    5,
+    7
+  ]
+}
