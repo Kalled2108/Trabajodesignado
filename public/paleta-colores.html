@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paleta de Colores Neutros Suaves</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f9f9f9;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+        
+        .palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+        
+        .color-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .color-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        
+        .color-swatch {
+            width: 100%;
+            height: 150px;
+            cursor: pointer;
+            transition: filter 0.3s ease;
+        }
+        
+        .color-swatch:hover {
+            filter: brightness(0.95);
+        }
+        
+        .color-info {
+            padding: 20px;
+        }
+        
+        .color-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .color-code {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .code-item {
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .code-item:hover {
+            background: #e8e8e8;
+        }
+        
+        .code-item.hex {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+        
+        .copy-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #999;
+            transition: color 0.2s;
+        }
+        
+        .copy-btn:hover {
+            color: #666;
+        }
+        
+        .usage {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+        }
+        
+        .usage h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .usage-text {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .combined-demo {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .demo-box {
+            height: 100px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.9em;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.5);
+        }
+        
+        .gradient-demo {
+            background: linear-gradient(135deg, #E8DCC8 0%, #D4C8B8 25%, #C9BFB0 50%, #A39A8F 100%);
+            height: 150px;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer {
+            text-align: center;
+            color: #999;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        
+        .message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            font-size: 0.9em;
+        }
+        
+        .message.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Paleta de Colores Neutros Suaves</h1>
+        <p class="subtitle">4 colores elegantes y armoniosos para diseño moderno</p>
+        
+        <div class="palette" id="palette">
+            <!-- Se genera con JavaScript -->
+        </div>
+        
+        <div class="usage">
+            <h2>📋 Cómo Usar</h2>
+            <p class="usage-text">
+                Esta paleta de colores está diseñada para crear una interfaz minimalista y elegante. 
+                Los colores neutros suaves funcionan bien como fondos, textos secundarios y elementos 
+                de acento sin saturar visualmente.
+            </p>
+            
+            <h3 style="color: #333; margin: 20px 0 10px 0; font-size: 1.2em;">CSS:</h3>
+            <div class="code-block">:root {
+  --color-1: #E8DCC8;  /* Beige Suave */
+  --color-2: #D4C8B8;  /* Gris Cálido */
+  --color-3: #C9BFB0;  /* Topo Claro */
+  --color-4: #A39A8F;  /* Gris Marrón */
+}</div>
+            
+            <h3 style="color: #333; margin: 20px 0 10px 0; font-size: 1.2em;">Combinaciones de Gradiente:</h3>
+            <div class="gradient-demo"></div>
+            
+            <h3 style="color: #333; margin: 20px 0 10px 0; font-size: 1.2em;">Demostración Combinada:</h3>
+            <div class="combined-demo">
+                <div class="demo-box" style="background: #E8DCC8;">1. Beige</div>
+                <div class="demo-box" style="background: #D4C8B8;">2. Gris Cálido</div>
+                <div class="demo-box" style="background: #C9BFB0;">3. Topo</div>
+                <div class="demo-box" style="background: #A39A8F; color: #fff;">4. Marrón</div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>✨ Haz clic en cualquier código para copiar al portapapeles</p>
+            <p style="margin-top: 10px;">Generado automáticamente • Paleta de colores profesional</p>
+        </div>
+    </div>
+    
+    <div class="message" id="message"></div>
+    
+    <script>
+        const colors = [
+            {
+                name: '1. Beige Suave',
+                hex: '#E8DCC8',
+                rgb: 'rgb(232, 220, 200)',
+                hsl: 'hsl(33, 48%, 85%)',
+                description: 'Tono cálido y acogedor'
+            },
+            {
+                name: '2. Gris Cálido',
+                hex: '#D4C8B8',
+                rgb: 'rgb(212, 200, 184)',
+                hsl: 'hsl(33, 28%, 78%)',
+                description: 'Balance neutro elegante'
+            },
+            {
+                name: '3. Topo Claro',
+                hex: '#C9BFB0',
+                rgb: 'rgb(201, 191, 176)',
+                hsl: 'hsl(33, 22%, 74%)',
+                description: 'Profundidad sutil'
+            },
+            {
+                name: '4. Gris Marrón',
+                hex: '#A39A8F',
+                rgb: 'rgb(163, 154, 143)',
+                hsl: 'hsl(33, 15%, 60%)',
+                description: 'Contraste con calidez'
+            }
+        ];
+        
+        function renderPalette() {
+            const paletteDiv = document.getElementById('palette');
+            
+            colors.forEach(color => {
+                const card = document.createElement('div');
+                card.className = 'color-card';
+                
+                card.innerHTML = `
+                    <div class="color-swatch" style="background: ${color.hex};" 
+                         onclick="copyToClipboard('${color.hex}')"></div>
+                    <div class="color-info">
+                        <div class="color-name">${color.name}</div>
+                        <p style="color: #888; font-size: 0.9em; margin-bottom: 15px;">${color.description}</p>
+                        <div class="color-code">
+                            <div class="code-item hex" onclick="copyToClipboard('${color.hex}')">
+                                <span>${color.hex}</span>
+                                <span class="copy-btn">📋</span>
+                            </div>
+                            <div class="code-item" onclick="copyToClipboard('${color.rgb}')">
+                                <span>${color.rgb}</span>
+                                <span class="copy-btn">📋</span>
+                            </div>
+                            <div class="code-item" onclick="copyToClipboard('${color.hsl}')">
+                                <span>${color.hsl}</span>
+                                <span class="copy-btn">📋</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                paletteDiv.appendChild(card);
+            });
+        }
+        
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const message = document.getElementById('message');
+                message.textContent = `✅ Copiado: ${text}`;
+                message.classList.add('show');
+                
+                setTimeout(() => {
+                    message.classList.remove('show');
+                }, 2000);
+            });
+        }
+        
+        renderPalette();
+    </script>
+</body>
+</html>

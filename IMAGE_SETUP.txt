@@ -1,0 +1,22 @@
+// Script para generar imágenes placeholder
+// Ejecuta esto en Node.js o usa una herramienta online como https://placeholder.com/
+
+/*
+Las imágenes necesarias se pueden obtener de:
+
+1. Usar URLs de placeholder online:
+   - https://via.placeholder.com/300x200?text=Nombre
+
+2. O descargar imágenes reales y colocarlas en public/images/
+
+Imágenes requeridas:
+- perfil.jpg
+- album1_cover.jpg, viaje1.jpg, viaje2.jpg, viaje3.jpg
+- album2_cover.jpg, naturaleza1.jpg, naturaleza2.jpg, naturaleza3.jpg
+- album3_cover.jpg, familia1.jpg, familia2.jpg, familia3.jpg
+
+Para usar placeholders online, edita app.js y reemplaza las rutas con:
+- https://via.placeholder.com/300x250?text=Juan+Pérez
+- https://via.placeholder.com/400x300?text=Viaje+1
+etc.
+*/
