@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalled21 | Portafolio Profesional</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="navbar-brand">Kled.Studio</a>
+            <ul class="nav-links">
+                <li><a href="#perfil" class="nav-link">Perfil</a></li>
+                <li><a href="#albumes" class="nav-link">Álbumes</a></li>
+                <li><a href="#contactos" class="nav-link">Contactos</a></li>
+                <li><a href="#favoritos" class="nav-link">Favoritos</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- SECCIÓN DE PERFIL -->
+        <section id="perfil" class="hero">
+            <div class="profile-image-container">
+                <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1000" alt="Kalled21" class="profile-image" id="imgPerfil">
+            </div>
+            <div class="hero-content">
+                <h1 id="perfilNombre">Kalled21</h1>
+                <p id="perfilDescripcion">Programador Junior apasionado por el desarrollo web, la arquitectura de software y la creación de experiencias digitales excepcionales.</p>
+                <button class="btn-action" style="margin-top: 1.5rem; background: var(--accent); color: var(--bg-dark);" onclick="abrirModalEditarPerfil()">
+                    Editar Perfil
+                </button>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE ÁLBUMES -->
+        <section id="albumes">
+            <h2 class="section-title">Colecciones</h2>
+            <div class="album-grid" id="albumesContainer">
+                <div class="card" onclick="cargarFotosAlbum(1)">
+                    <img src="images/viaje_1.png" class="card-img" alt="Exploración Global">
+                    <div class="card-body">
+                        <h3 class="card-title">Exploración Global</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <p class="card-meta">3 Fotografías</p>
+                            <button class="btn-action" style="padding: 0.4rem 0.8rem; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.2);" 
+                                    onclick="event.stopPropagation(); confirmarEliminarAlbum(1)">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" onclick="cargarFotosAlbum(2)">
+                    <img src="images/naturaleza_1.png" class="card-img" alt="Esencia Natural">
+                    <div class="card-body">
+                        <h3 class="card-title">Esencia Natural</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <p class="card-meta">3 Fotografías</p>
+                            <button class="btn-action" style="padding: 0.4rem 0.8rem; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.2);" 
+                                    onclick="event.stopPropagation(); confirmarEliminarAlbum(2)">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card" onclick="cargarFotosAlbum(3)">
+                    <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&q=80&w=1000" class="card-img" alt="Legado Familiar">
+                    <div class="card-body">
+                        <h3 class="card-title">Legado Familiar</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <p class="card-meta">3 Fotografías</p>
+                            <button class="btn-action" style="padding: 0.4rem 0.8rem; background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.2);" 
+                                    onclick="event.stopPropagation(); confirmarEliminarAlbum(3)">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Galería de fotos del álbum seleccionado -->
+            <div id="galeriaAlbum" style="display: none; animation: fadeIn 0.5s ease-out;">
+                <div class="galeria-header">
+                    <h2 class="section-title" id="tituloAlbum"></h2>
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <button class="btn-action" style="background: var(--accent); color: var(--bg-dark);" onclick="abrirModalAñadirFoto()">
+                            <span>+</span> Añadir Foto
+                        </button>
+                        <button class="btn-back" onclick="cerrarGaleria()">
+                            <span>←</span> Volver a Colecciones
+                        </button>
+                    </div>
+                </div>
+                <div class="album-grid" id="fotosContainer"></div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN DE CONTACTOS -->
+        <section id="contactos">
+            <h2 class="section-title">Contactos</h2>
+            <div style="margin-bottom: 2rem; display: flex; gap: 1rem;">
+                <button class="btn-action" id="btnCargarContactos" onclick="cargarContactos()">
+                    Cargar Red de Contactos
+                </button>
+                <button class="btn-action" style="background: var(--accent); color: var(--bg-dark);" onclick="abrirModalAñadirContacto()">
+                    <span>+</span> Nuevo Contacto
+                </button>
+            </div>
+            <div id="contactosContainer" class="contact-grid"></div>
+        </section>
+
+        <!-- SECCIÓN DE FAVORITOS -->
+        <section id="favoritos">
+            <h2 class="section-title">Favoritos</h2>
+            <div style="margin-bottom: 2rem;">
+                <button class="btn-action" onclick="cargarFavoritos()">Mostrar Selección</button>
+            </div>
+            <div id="favoritosContainer" class="album-grid"></div>
+        </section>
+    </main>
+
+    <!-- Modales (los mismos que en index.ejs) -->
+    <!-- Modal Premium para ver foto -->
+    <div class="modal-overlay" id="modalFoto">
+        <div class="modal-content">
+            <img id="modalImagen" src="" class="modal-img" alt="">
+            <div class="modal-details">
+                <div>
+                    <h3 id="modalTitulo" style="margin-bottom: 0.5rem;"></h3>
+                    <p class="card-meta">Fotografía Original</p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-action" id="btnLike" onclick="darLike()">
+                        ❤️ <span id="likeCount">0</span>
+                    </button>
+                    <button class="btn-action" id="btnFavorito" onclick="agregarFavorito()">
+                        ⭐ Favorito
+                    </button>
+                    <button class="btn-action" onclick="cerrarModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para añadir foto -->
+    <div class="modal-overlay" id="modalAñadirFoto">
+        <div class="modal-content" style="max-width: 500px; padding: 2.5rem;">
+            <h2 class="section-title" style="font-size: 1.75rem; margin-bottom: 2rem;">Nueva Fotografía</h2>
+            <form id="formAñadirFoto" onsubmit="subirFoto(event)">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Título de la Obra</label>
+                    <input type="text" id="inputTitulo" required 
+                           style="width: 100%; padding: 0.8rem; border-radius: 0.8rem; background: var(--bg-card); border: 1px solid var(--glass-border); color: white; outline: none;">
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Archivo de Imagen</label>
+                    <input type="file" id="inputFoto" name="foto" required accept="image/*"
+                           style="width: 100%; padding: 0.8rem; border-radius: 0.8rem; background: var(--bg-card); border: 1px solid var(--glass-border); color: white; outline: none;">
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn-back" onclick="cerrarModalAñadir()">Cancelar</button>
+                    <button type="submit" class="btn-action" style="background: var(--accent); color: var(--bg-dark);">Guardar Imagen</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para editar perfil -->
+    <div class="modal-overlay" id="modalEditarPerfil">
+        <div class="modal-content" style="max-width: 500px; padding: 2.5rem;">
+            <h2 class="section-title" style="font-size: 1.75rem; margin-bottom: 2rem;">Editar Mi Perfil</h2>
+            <form id="formEditarPerfil" onsubmit="actualizarPerfil(event)">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Nombre</label>
+                    <input type="text" id="editNombre" required 
+                           style="width: 100%; padding: 0.8rem; border-radius: 0.8rem; background: var(--bg-card); border: 1px solid var(--glass-border); color: white; outline: none;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Descripción</label>
+                    <textarea id="editDescripcion" required rows="3"
+                           style="width: 100%; padding: 0.8rem; border-radius: 0.8rem; background: var(--bg-card); border: 1px solid var(--glass-border); color: white; outline: none; font-family: inherit; resize: none;"></textarea>
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Foto de Perfil</label>
+                    <input type="file" id="editFoto" name="foto" accept="image/*"
+                           style="width: 100%; padding: 0.8rem; border-radius: 0.8rem; background: var(--bg-card); border: 1px solid var(--glass-border); color: white; outline: none;">
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn-back" onclick="cerrarModalEditar()">Cancelar</button>
+                    <button type="submit" class="btn-action" style="background: var(--accent); color: var(--bg-dark);">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para añadir contacto -->
+    <div class="modal-overlay" id="modalAñadirContacto">
+        <div class="modal-content" style="max-width: 500px; padding: 2.5rem;">
+            <h2 class="section-title" style="font-size: 1.75rem; margin-bottom: 2rem;">Nuevo Contacto</h2>
+            <form id="formAñadirContacto" onsubmit="subirContacto(event)">
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Nombre Completo</label>
+                    <input type="text" id="contactoNombre" required 
+                           style="width: 100%; padding: 0.8rem; border-radius: 0.8rem; background: var(--bg-card); border: 1px solid var(--glass-border); color: white; outline: none;">
+                </div>
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Correo Electrónico</label>
+                    <input type="email" id="contactoEmail" required
+                           style="width: 100%; padding: 0.8rem; border-radius: 0.8rem; background: var(--bg-card); border: 1px solid var(--glass-border); color: white; outline: none;">
+                </div>
+                <div style="margin-bottom: 2rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Teléfono</label>
+                    <input type="tel" id="contactoTelefono" required
+                           style="width: 100%; padding: 0.8rem; border-radius: 0.8rem; background: var(--bg-card); border: 1px solid var(--glass-border); color: white; outline: none;">
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button type="button" class="btn-back" onclick="cerrarModalAñadirContacto()">Cancelar</button>
+                    <button type="submit" class="btn-action" style="background: var(--accent); color: var(--bg-dark);">Guardar Contacto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

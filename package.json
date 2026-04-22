@@ -1,5 +1,5 @@
 {
-  "name": "app-perfil-fotos",
+  "name": "kled-studio",
   "version": "1.0.0",
   "description": "Aplicación web de perfil, álbumes de fotos, contactos y favoritos",
   "main": "app.js",
